@@ -50,6 +50,15 @@ teste prático de programação orientada a objetos.
 * invoca o método que calcula o salário de todos os funcionários
 * com bônus e benefícios inclusos para quem tem direito e calcula
 * o valor do salário mais alto pago no mês.
-
-
-
+## Nome do Funcionário Com o Maior Benefício do Mês
+![image](https://github.com/Joelson0935/Sinerji/assets/56981455/2a58fa4f-c01d-4edd-9c48-3bb2792a806f)
+* invoca o método que calcula o salário de todos os funcionários
+* sem incluir os bônus do mês, calcula o valor recebido que vem
+* somado de salário base mais benefícios e usa estes dados para
+* descobrir qual funcionário recebeu o maior benefício e retorna 
+* o nome deste funcionário.
+## Funcionário Que Mais Vendeu no Mês
+![image](https://github.com/Joelson0935/Sinerji/assets/56981455/24ebe124-0a90-4fc9-916e-fe50ef05955e)
+* invoca o método que calcula o salário de todos os funcionários
+* com bônus e benefícios inclusos para quem tem direito e calcula
+* o funcionário que mais vendeu no mês e o retorna.
