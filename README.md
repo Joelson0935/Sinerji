@@ -17,7 +17,7 @@ teste prático de programação orientada a objetos.
 
 ## Calcular Salário
   ![image](https://github.com/Joelson0935/Sinerji/assets/56981455/3f6a1edb-ddbe-48c4-ae04-b45daeff6914)
-* calcula os salários dos funcionários com todos os bônus e métodos adicionados
+* calcula os salários dos funcionários com todos os bônus e benefícios adicionados
 * e coloca este valor no campo valor recebido da classe funcionário.
 ## Calcular Salário Sem Benefícios
 ![image](https://github.com/Joelson0935/Sinerji/assets/56981455/d87ddab6-14bd-4ac8-b787-0f41ba37a53e)
