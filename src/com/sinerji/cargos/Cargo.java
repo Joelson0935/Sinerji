@@ -1,20 +1,17 @@
 package com.sinerji.cargos;
 
-public abstract class Cargo {
-
+public class Cargo {
 	private String nome;
 	private Double salario;
-	private Double bonusAnual;
 
 	public Cargo() {
 		super();
 	}
 
-	public Cargo(String nome, Double salario, Double bonusAnual) {
+	public Cargo(String nome, Double salario) {
 		super();
 		this.nome = nome;
 		this.salario = salario;
-		this.bonusAnual = bonusAnual;
 	}
 
 	public String getNome() {
@@ -31,21 +28,6 @@ public abstract class Cargo {
 
 	public void setSalario(Double salario) {
 		this.salario = salario;
-	}
-
-	public Double getBonusAnual() {
-		return bonusAnual;
-	}
-
-	public void setBonusAnual(Double bonusAnual) {
-		this.bonusAnual = bonusAnual;
-	}
-
-	public abstract double beneficio();
-
-	@Override
-	public String toString() {
-		return "Cargo [nome=" + nome + ", salario=" + salario + ", bonusAnual=" + bonusAnual + "]";
 	}
 
 }
