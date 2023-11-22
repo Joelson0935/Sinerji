@@ -9,9 +9,16 @@ import java.util.stream.Collectors;
 import com.sinerji.cargos.Funcionario;
 import com.sinerji.vendas.Venda;
 
+//List<Funcionario> funcs = funcionarios.stream().filter(f -> !f.getCargo().equalsIgnoreCase("gerente")).toList();
+//System.out.println("Funcionariosssss : " + funcs);
+
 public class Main {
 
-	public static Double valorTotalPagoComBonus(List<Funcionario> funcionarios) {
+	public static Double valorTotalPagoComBonus(List<Funcionario> funcionarios, LocalDate data) {
+		funcionarios.forEach(funcionario -> {
+			calcularSalario(funcionario, data);
+		});
+
 		Double totalPago = 0.0;
 		for (Funcionario funcionario : funcionarios) {
 			totalPago += funcionario.getValorRecebido();
@@ -19,18 +26,27 @@ public class Main {
 		return totalPago;
 	}
 
-	public static Double valorTotalPagoSemBonus(List<Funcionario> funcionarios) {
+	public static Double valorTotalPagoSemBeneficios(List<Funcionario> funcionarios, LocalDate data) {
+		funcionarios.forEach(funcionario -> {
+			calcularSalarioSemBeneficio(funcionario, data);
+		});
+
 		Double totalPago = 0.0;
 		for (Funcionario funcionario : funcionarios) {
-			totalPago += funcionario.getSalarioBase();
+			totalPago += funcionario.getValorRecebido();
 		}
 		return totalPago;
 	}
 
-	public static Double valorTotalBeneficiosPagos(List<Funcionario> funcionarios) {
+	public static Double valorTotalBeneficiosPagos(List<Funcionario> funcionarios, LocalDate data) {
+		funcionarios.forEach(funcionario -> {
+			calcularSalarioSemBonus(funcionario, data);
+		});
+
 		Double totalPago = 0.0;
 		Double salarioBase = 0.0;
 		Double valorRecebido = 0.0;
+
 		for (Funcionario funcionario : funcionarios) {
 			if (!funcionario.getCargo().equalsIgnoreCase("gerente")) {
 				salarioBase += funcionario.getSalarioBase();
@@ -41,16 +57,18 @@ public class Main {
 		return totalPago;
 	}
 
-	public static Double salarioMaisAlto(List<Funcionario> funcionarios) {
+	public static Double salarioMaisAltoDoMes(List<Funcionario> funcionarios, LocalDate data) {
+		funcionarios.forEach(funcionario -> {
+			calcularSalario(funcionario, data);
+		});
+
 		Double totalPago = 0.0;
 
 		for (Funcionario funcionario : funcionarios) {
 			totalPago += funcionario.getValorRecebido();
 		}
 
-		List<Double> valores = funcionarios.stream().map(func -> {
-			return func.getValorRecebido();
-		}).collect(Collectors.toList());
+		List<Double> valores = funcionarios.stream().map(func -> func.getValorRecebido()).collect(Collectors.toList());
 
 		Double maiorValor = valores.stream().reduce(0.0, (acc, valor) -> {
 			if (acc < valor) {
@@ -64,18 +82,22 @@ public class Main {
 		return totalPago;
 	}
 
-	public static String nomeFuncionarioMaiorBeneficio(List<Funcionario> funcionarios) {
+	public static String nomeFuncionarioMaiorBeneficioMes(List<Funcionario> funcionarios, LocalDate data) {
+		funcionarios.forEach(funcionario -> {
+			calcularSalarioSemBonus(funcionario, data);
+		});
+
 		List<Funcionario> funcionariosComBeneficio = new ArrayList<>();
 
-		for (Funcionario funcionario : funcionarios) {
-			if (!funcionario.getCargo().equalsIgnoreCase("gerente")) {
-				funcionariosComBeneficio.add(funcionario);
-			}
-		}
+		funcionarios.stream().filter(f -> !f.getCargo().equalsIgnoreCase("gerente")).forEach(f -> {
+			funcionariosComBeneficio.add(f);
+		});
 
-		List<Double> valores = funcionariosComBeneficio.stream().map(func -> {
-			return func.getValorRecebido();
-		}).collect(Collectors.toList());
+		funcionariosComBeneficio.stream()
+				.forEach(func -> func.setValorRecebido(func.getValorRecebido() - func.getSalarioBase()));
+
+		List<Double> valores = funcionariosComBeneficio.stream().map(func -> func.getValorRecebido())
+				.collect(Collectors.toList());
 
 		Double maiorValor = valores.stream().reduce(0.0, (acc, valor) -> {
 			if (acc < valor) {
@@ -95,17 +117,17 @@ public class Main {
 	}
 
 	public static Funcionario vendedorQueMaisVendeu(List<Funcionario> funcionarios, LocalDate data) {
-
-//		List<Funcionario> funcs = funcionarios.stream().filter(f -> !f.getCargo().equalsIgnoreCase("gerente")).toList();
-//		System.out.println("Funcionariosssss : " + funcs);
+		funcionarios.forEach(funcionario -> {
+			calcularSalario(funcionario, data);
+		});
 
 		List<Funcionario> vendedores = funcionarios.stream()
-				.filter(func -> func.getCargo().equalsIgnoreCase("vendedor")).collect(Collectors.toList());
-		List<Venda> vendas = null;
-		for (Funcionario vendedor : vendedores) {
+				.filter(func -> func.getCargo().equalsIgnoreCase("vendedor")).toList();
 
-			vendas = vendedor.getVendas().stream()
-					.filter(venda -> venda.getMes().getMonthValue() == data.getMonthValue()).toList();
+		List<Venda> vendas = new ArrayList<>();
+		for (Funcionario vendedor : vendedores) {
+			vendedor.getVendas().stream().filter(v -> v.getMes().getMonthValue() == data.getMonthValue())
+					.filter(v -> v.getMes().getYear() == data.getYear()).forEach(v -> vendas.add(v));
 		}
 
 		Double resultado = vendas.stream().map(venda -> venda.getValor()).reduce(0.0,
@@ -124,10 +146,12 @@ public class Main {
 		return funcionario;
 	}
 
+	// Método auxiliar que calcula o salário do funcionário pela data com todos os
+	// benefícios e bônus inclusos
 	public static void calcularSalario(Funcionario funcionario, LocalDate data) {
 
 		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
-			Period anosServico = funcionario.getDataContrato().until(LocalDate.now());
+			Period anosServico = funcionario.getDataContrato().until(data);
 			int bonus = anosServico.getYears() * 1000;
 			double beneficio = funcionario.getSalarioBase() * 0.2;
 			Double salario = funcionario.getSalarioBase() + bonus + beneficio;
@@ -135,20 +159,72 @@ public class Main {
 		}
 
 		if (funcionario.getCargo().equalsIgnoreCase("Gerente")) {
-			Period anosServico = funcionario.getDataContrato().until(LocalDate.now());
+			Period anosServico = funcionario.getDataContrato().until(data);
 			int bonus = anosServico.getYears() * 3000;
 			Double salario = funcionario.getSalarioBase() + bonus;
 			funcionario.setValorRecebido(salario);
 		}
 
 		if (funcionario.getCargo().equalsIgnoreCase("Vendedor")) {
-			Period anosServico = funcionario.getDataContrato().until(LocalDate.now());
+			Period anosServico = funcionario.getDataContrato().until(data);
 			int bonus = anosServico.getYears() * 1800;
 
 			funcionario.getVendas().stream().filter(venda -> venda.getMes().getYear() == data.getYear())
 					.filter(venda -> venda.getMes().getMonthValue() == data.getMonthValue()).forEach(venda -> {
 						double beneficio = venda.getValor() * 0.3;
 						double salario = funcionario.getSalarioBase() + beneficio + bonus;
+						funcionario.setValorRecebido(salario);
+					});
+		}
+
+	}
+
+	// Método auxiliar que calcula o salário do funcionário pela data sem benefícios
+	// inclusos
+	public static void calcularSalarioSemBeneficio(Funcionario funcionario, LocalDate data) {
+
+		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
+			Period anosServico = funcionario.getDataContrato().until(data);
+			int bonus = anosServico.getYears() * 1000;
+			Double salario = funcionario.getSalarioBase() + bonus;
+			funcionario.setValorRecebido(salario);
+		}
+
+		if (funcionario.getCargo().equalsIgnoreCase("Gerente")) {
+			Period anosServico = funcionario.getDataContrato().until(data);
+			int bonus = anosServico.getYears() * 3000;
+			Double salario = funcionario.getSalarioBase() + bonus;
+			funcionario.setValorRecebido(salario);
+		}
+
+		if (funcionario.getCargo().equalsIgnoreCase("Vendedor")) {
+			Period anosServico = funcionario.getDataContrato().until(data);
+			int bonus = anosServico.getYears() * 1800;
+
+			funcionario.getVendas().stream().filter(venda -> venda.getMes().getYear() == data.getYear())
+					.filter(venda -> venda.getMes().getMonthValue() == data.getMonthValue()).forEach(venda -> {
+						double salario = funcionario.getSalarioBase() + bonus;
+						funcionario.setValorRecebido(salario);
+					});
+		}
+
+	}
+
+	// Método auxiliar que calcula o salário do funcionário pela data sem os bônus
+	// inclusos
+	public static void calcularSalarioSemBonus(Funcionario funcionario, LocalDate data) {
+
+		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
+			double beneficio = funcionario.getSalarioBase() * 0.2;
+			Double salario = funcionario.getSalarioBase() + beneficio;
+			funcionario.setValorRecebido(salario);
+		}
+
+		if (funcionario.getCargo().equalsIgnoreCase("Vendedor")) {
+			funcionario.getVendas().stream().filter(venda -> venda.getMes().getYear() == data.getYear())
+					.filter(venda -> venda.getMes().getMonthValue() == data.getMonthValue()).forEach(venda -> {
+						double beneficio = venda.getValor() * 0.3;
+						double salario = funcionario.getSalarioBase() + beneficio;
 						funcionario.setValorRecebido(salario);
 					});
 		}
@@ -226,25 +302,49 @@ public class Main {
 		funcionarios.add(juliana);
 		funcionarios.add(bento);
 
-		calcularSalario(jorge, LocalDate.parse("2021-12-01"));
-		calcularSalario(maria, LocalDate.parse("2021-12-01"));
-		calcularSalario(ana, LocalDate.parse("2021-12-01"));
-		calcularSalario(joao, LocalDate.parse("2021-12-01"));
-		calcularSalario(juliana, LocalDate.parse("2021-12-01"));
-		calcularSalario(bento, LocalDate.parse("2021-12-01"));
+		System.out.println("Valor total pago com todos os beneficios e bônus do mês à todos os funcionários: "
+				+ valorTotalPagoComBonus(funcionarios, LocalDate.parse("2022-03-01")));
 
-		System.out.println(jorge);
-		System.out.println(maria);
-		System.out.println(ana);
-		System.out.println(joao);
-		System.out.println(juliana);
-		System.out.println(bento);
-		System.out.println("Valor pago com todos os beneficios e bônus: " + valorTotalPagoComBonus(funcionarios));
-		System.out.println("Valor pago sem benefícios e sem bônus: " + valorTotalPagoSemBonus(funcionarios));
-		System.out.println("Valor pago em benefícios para funcionarios: " + valorTotalBeneficiosPagos(funcionarios));
-		System.out.println("Salário mais alto: " + salarioMaisAlto(funcionarios));
-		System.out.println("Nome do Funcionário com o maior salário: " + nomeFuncionarioMaiorBeneficio(funcionarios));
+		System.out.println();
+		funcionarios.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
+		System.out.println("Valor pago sem benefícios: "
+				+ valorTotalPagoSemBeneficios(funcionarios, LocalDate.parse("2022-03-01")));
+
+		System.out.println();
+		funcionarios.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
+		System.out.println("Valor total de benefícios pagos no mês: "
+				+ valorTotalBeneficiosPagos(funcionarios, LocalDate.parse("2022-03-01")));
+
+		System.out.println();
+		funcionarios.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
+		System.out.println(
+				"Salário mais alto no mês: " + salarioMaisAltoDoMes(funcionarios, LocalDate.parse("2022-03-01")));
+
+		System.out.println();
+		funcionarios.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
+		System.out.println("Nome do Funcionário com o maior salário: "
+				+ nomeFuncionarioMaiorBeneficioMes(funcionarios, LocalDate.parse("2022-01-01")));
+
+		System.out.println();
+		funcionarios.stream().filter(funcionario -> !funcionario.getCargo().equalsIgnoreCase("gerente"))
+				.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
 		System.out.println("Vendedor que mais vendeu no mês: "
-				+ vendedorQueMaisVendeu(funcionarios, LocalDate.parse("2022-01-01")));
+				+ vendedorQueMaisVendeu(funcionarios, LocalDate.parse("2022-04-01")));
+
+		System.out.println();
+		funcionarios.stream().filter(funcionario -> funcionario.getCargo().equalsIgnoreCase("Vendedor"))
+				.forEach(funcionario -> System.out.println(funcionario));
+		System.out.println();
+
 	}
 }
