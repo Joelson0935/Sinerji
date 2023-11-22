@@ -45,7 +45,11 @@ teste prático de programação orientada a objetos.
 * invoca o método que calcula o salário de todos os funcionários
 * sem incluir os bônus do mês e calcula o valor total pago em 
 * benefícios pela empresa a todos os funcionários.
-
+## Salário Mais Alto no Mês
+![image](https://github.com/Joelson0935/Sinerji/assets/56981455/87b0c264-ee9a-477b-8258-ee257904a905)
+* invoca o método que calcula o salário de todos os funcionários
+* com bônus e benefícios inclusos para quem tem direito e calcula
+* o valor do salário mais alto pago no mês.
 
 
 
