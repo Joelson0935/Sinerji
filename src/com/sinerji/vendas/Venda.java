@@ -1,6 +1,8 @@
 package com.sinerji.vendas;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class Venda {
 
@@ -45,7 +47,8 @@ public class Venda {
 
 	@Override
 	public String toString() {
-		return "Venda [nomeVendedor=" + nomeVendedor + ", valor=" + valor + ", mes=" + mes + "]";
+		return "Venda [nomeVendedor=" + nomeVendedor + ", valor="
+				+ NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(valor) + ", mes=" + mes + "]";
 	}
 
 }

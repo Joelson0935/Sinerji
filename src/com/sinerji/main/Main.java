@@ -1,20 +1,19 @@
 package com.sinerji.main;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-import com.sinerji.cargos.Funcionario;
+import com.sinerji.funcionarios.Funcionario;
 import com.sinerji.vendas.Venda;
-
-//List<Funcionario> funcs = funcionarios.stream().filter(f -> !f.getCargo().equalsIgnoreCase("gerente")).toList();
-//System.out.println("Funcionariosssss : " + funcs);
 
 public class Main {
 
-	public static Double valorTotalPagoComBonus(List<Funcionario> funcionarios, LocalDate data) {
+	public static String valorTotalPagoComBonus(List<Funcionario> funcionarios, LocalDate data) {
 		funcionarios.forEach(funcionario -> {
 			calcularSalario(funcionario, data);
 		});
@@ -23,10 +22,10 @@ public class Main {
 		for (Funcionario funcionario : funcionarios) {
 			totalPago += funcionario.getValorRecebido();
 		}
-		return totalPago;
+		return NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(totalPago);
 	}
 
-	public static Double valorTotalPagoSemBeneficios(List<Funcionario> funcionarios, LocalDate data) {
+	public static String valorTotalPagoSemBeneficios(List<Funcionario> funcionarios, LocalDate data) {
 		funcionarios.forEach(funcionario -> {
 			calcularSalarioSemBeneficio(funcionario, data);
 		});
@@ -35,10 +34,10 @@ public class Main {
 		for (Funcionario funcionario : funcionarios) {
 			totalPago += funcionario.getValorRecebido();
 		}
-		return totalPago;
+		return NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(totalPago);
 	}
 
-	public static Double valorTotalBeneficiosPagos(List<Funcionario> funcionarios, LocalDate data) {
+	public static String valorTotalBeneficiosPagos(List<Funcionario> funcionarios, LocalDate data) {
 		funcionarios.forEach(funcionario -> {
 			calcularSalarioSemBonus(funcionario, data);
 		});
@@ -54,10 +53,10 @@ public class Main {
 			}
 		}
 		totalPago = valorRecebido - salarioBase;
-		return totalPago;
+		return NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(totalPago);
 	}
 
-	public static Double salarioMaisAltoDoMes(List<Funcionario> funcionarios, LocalDate data) {
+	public static String salarioMaisAltoDoMes(List<Funcionario> funcionarios, LocalDate data) {
 		funcionarios.forEach(funcionario -> {
 			calcularSalario(funcionario, data);
 		});
@@ -79,7 +78,7 @@ public class Main {
 
 		totalPago = maiorValor;
 
-		return totalPago;
+		return NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(totalPago);
 	}
 
 	public static String nomeFuncionarioMaiorBeneficioMes(List<Funcionario> funcionarios, LocalDate data) {
@@ -146,8 +145,6 @@ public class Main {
 		return funcionario;
 	}
 
-	// Método auxiliar que calcula o salário do funcionário pela data com todos os
-	// benefícios e bônus inclusos
 	public static void calcularSalario(Funcionario funcionario, LocalDate data) {
 
 		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
@@ -179,8 +176,6 @@ public class Main {
 
 	}
 
-	// Método auxiliar que calcula o salário do funcionário pela data sem benefícios
-	// inclusos
 	public static void calcularSalarioSemBeneficio(Funcionario funcionario, LocalDate data) {
 
 		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
@@ -210,8 +205,6 @@ public class Main {
 
 	}
 
-	// Método auxiliar que calcula o salário do funcionário pela data sem os bônus
-	// inclusos
 	public static void calcularSalarioSemBonus(Funcionario funcionario, LocalDate data) {
 
 		if (funcionario.getCargo().equalsIgnoreCase("Secretario")) {
@@ -330,7 +323,7 @@ public class Main {
 		funcionarios.forEach(funcionario -> System.out.println(funcionario));
 		System.out.println();
 
-		System.out.println("Nome do Funcionário com o maior salário: "
+		System.out.println("Nome do Funcionário com o maior benefício: "
 				+ nomeFuncionarioMaiorBeneficioMes(funcionarios, LocalDate.parse("2022-01-01")));
 
 		System.out.println();
